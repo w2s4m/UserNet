@@ -1,0 +1,327 @@
+/* الألوان والسمات المتطورة لغرف التحكم العسكرية والتقنية */
+:root {
+    --bg-main: #0f172a;
+    --bg-surface: rgba(30, 41, 59, 0.7);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --accent: #38bdf8;
+    --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --blur: blur(12px);
+}
+
+.light-mode {
+    --bg-main: #f1f5f9;
+    --bg-surface: rgba(255, 255, 255, 0.85);
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent: #0284c7;
+    --accent-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.2);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, sans-serif;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    background: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 16px;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Glassmorphism الهيدر */
+.main-header {
+    background: var(--bg-surface);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.main-header p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+/* لوحة التحكم والعدادات الذكية */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: var(--bg-surface);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--shadow);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.stat-info h3 {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.stat-info p {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.backup-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    justify-content: flex-end;
+}
+
+/* مكونات الأزرار والتحكم */
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.btn-primary { background: var(--accent-gradient); color: #fff; }
+.btn-secondary { background: rgba(255,255,255,0.05); color: var(--text-primary); border: 1px solid var(--border-color); }
+.btn-danger { background: var(--danger); color: #fff; }
+
+.icon-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-primary);
+}
+
+/* الشبكات والبطاقات */
+.section-block {
+    margin-bottom: 32px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.routers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.router-card {
+    background: var(--bg-surface);
+    backdrop-filter: var(--blur);
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 24px;
+    position: relative;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+}
+
+.router-card.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.delete-action-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: transparent;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+/* نظام الفلترة والأجهزة */
+.filter-wrapper {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.search-input, .filter-select {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.search-input { flex: 2; min-width: 260px; }
+.filter-select { flex: 1; min-width: 150px; }
+
+.devices-list { display: flex; flex-direction: column; gap: 12px; }
+
+.device-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* شريط تقدم الاشتراك المتقدم */
+.billing-progress-container {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.billing-progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+    width: 0%;
+}
+
+.badge {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+.badge-active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.badge-expired { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+
+/* نفاذة Modals */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 480px;
+}
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary); }
+.form-group input, .form-group select {
+    width: 100%; padding: 10px; background: rgba(0,0,0,0.1); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary);
+}
+
+/* الهواتف والشاشات الصغيرة */
+@media (max-width: 768px) {
+    .main-header { flex-direction: column; text-align: center; gap: 16px; }
+    .flex-column-mobile { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .device-card { flex-direction: column; align-items: flex-start; }
+}
+
+/* شارة التنبيه للأجهزة الحرجة */
+.badge-warning-critical {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+    100% { opacity: 0.7; }
+}
+
+/* زر تذكير الواتساب الذكي */
+.btn-whatsapp {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3);
+}
+
+/* شارة التنبيه للأجهزة الحرجة */
+.badge-warning-critical {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+    animation: pulseGlow 2s infinite;
+}
+
+@keyframes pulseGlow {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
+    100% { opacity: 0.7; }
+}

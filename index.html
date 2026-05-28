@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز إدارة الشبكة الذكي</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="NetManager">
+</head>
+<body class="dark-mode">
+
+    <div class="app-container">
+        
+        <header class="main-header">
+            <div class="welcome-area">
+                <h1>لوحة التحكم الذكية 👋</h1>
+                <p>إدارة المشتركين والراوترات ونظام الفوترة التلقائي</p>
+            </div>
+            <div class="header-controls">
+                <button id="themeToggle" class="icon-btn" title="تغيير المظهر">🌓</button>
+                <button id="installBtn" class="btn btn-accent style-pwa-btn" style="display:none;">📲 تثبيت التطبيق</button>
+            </div>
+        </header>
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📶</div>
+                <div class="stat-info">
+                    <h3>الراوترات</h3>
+                    <p id="stat-routers">0</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📱</div>
+                <div class="stat-info">
+                    <h3>إجمالي المشتركين</h3>
+                    <p id="stat-devices">0</p>
+                </div>
+            </div>
+            <div class="stat-card status-active">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>الاشتراكات النشطة</h3>
+                    <p id="stat-active">0</p>
+                </div>
+            </div>
+            <div class="stat-card status-expired">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-info">
+                    <h3>الاشتراكات المنتهية</h3>
+                    <p id="stat-expired">0</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="backup-bar">
+            <button class="btn btn-secondary" onclick="exportData()">💾 تصدير نسخة احتياطية</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📂 استعادة نسخة</button>
+            <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+        </div>
+
+        <section class="section-block">
+            <div class="section-header">
+                <h2>🎛️ أجهزة التوجيه (الراوترات)</h2>
+                <button class="btn btn-primary" onclick="openModal('routerModal')">➕ إضافة راوتر</button>
+            </div>
+            <div class="routers-grid" id="routersGrid"></div>
+        </section>
+
+        <section class="section-block" id="devicesSection" style="display: none;">
+            <div class="section-header flex-column-mobile">
+                <h2 id="selectedRouterTitle">📱 الأجهزة التابعة للراوتر</h2>
+                <button class="btn btn-primary" onclick="openDeviceModal()">➕ إضافة مشترك جديد</button>
+            </div>
+
+            <div class="filter-wrapper">
+                <input type="text" id="searchDevice" class="search-input" placeholder="ابحث بالاسم، الماك آدرس، أو نوع الجوال..." oninput="renderDevices()">
+                <select id="filterPayment" class="filter-select" onchange="renderDevices()">
+                    <option value="all">كل حالات الدفع</option>
+                    <option value="واصل">واصل</option>
+                    <option value="تجريبي">تجريبي</option>
+                    <option value="لم يدفع">لم يدفع</option>
+                </select>
+                    <select id="filterStatus" class="filter-select" onchange="renderDevices()">
+                    <option value="all">كل حالات الاشتراك</option>
+                    <option value="active">نشط</option>
+                    <option value="warning">قريب من الانتهاء (≤ 3 أيام)</option> <option value="expired">منتهي</option>
+                </select>
+            </div>
+
+            <div class="devices-list" id="devicesList"></div>
+        </section>
+    </div>
+
+    <div id="routerModal" class="modal">
+        <div class="modal-content">
+            <h3>إضافة راوتر جديد</h3>
+            <div class="form-group">
+                <label>اسم الراوتر المعرّف</label>
+                <input type="text" id="routerName" placeholder="مثال: راوتر الطابق الثاني (الرئيسي)">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('routerModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveRouter()">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deviceModal" class="modal">
+        <div class="modal-content">
+            <h3 id="deviceModalTitle">إضافة مشترك جديد</h3>
+            <input type="hidden" id="editDeviceIndex">
+            
+            <div class="form-group">
+                <label>اسم المشترك الثلاثي</label>
+                <input type="text" id="devOwner" placeholder="أدخل اسم العميل">
+            </div>
+            <!-- الحقل الجديد: رقم الواتساب -->
+            <div class="form-group">
+                <label>رقم الواتساب (مع الرمز الدولي بدون أصفار، مثال: 970599xxxxxx)</label>
+                <input type="tel" id="devPhone" placeholder="97059xxxxxxx">
+            </div>
+            <div class="form-group">
+                <label>عنوان الـ MAC</label>
+                <input type="text" id="devMac" placeholder="00:1A:2B:3C:4D:5E">
+            </div>
+            <div class="form-group">
+                <label>نوع جوال المشترك</label>
+                <input type="text" id="devModel" placeholder="مثال: iPhone 14 Pro">
+            </div>
+            <div class="form-group">
+                <label>تاريخ الاشتراك وتفعيل الحساب</label>
+                <input type="date" id="devJoinDate">
+            </div>
+            <div class="form-group">
+                <label>باقة الاشتراك (الأيام)</label>
+                <input type="number" id="devDuration" value="30">
+            </div>
+            <div class="form-group">
+                <label>تحديث الفوترة المالي</label>
+                <select id="devPayment">
+                    <option value="واصل">واصل (خالص ماليّاً)</option>
+                    <option value="تجريبي">فترة تجريبية (مؤقت)</option>
+                    <option value="لم يدفع">لم يدفع (مستحق ماليّاً)</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('deviceModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="saveDevice()">حفظ البيانات</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
