@@ -1,11 +1,14 @@
 let networkData = JSON.parse(localStorage.getItem('networkData')) || [];
 let currentRouterIndex = null;
 let deferredPrompt;
+let newWorker;
 
 window.addEventListener('DOMContentLoaded', () => {
     initApp();
     setupPWA();
     setupNotifications();
+    initSystemStatusBar(); // تشغيل شريط الحالة الذكي المطور
+    initVersionControl();   // تشغيل نظام الإصدارات المخزن للوحة التذييل
 });
 
 function initApp() {
@@ -23,6 +26,62 @@ function initApp() {
             icon.className = 'fa-solid fa-moon';
         }
     });
+}
+
+// --- نظام التحكم بالإصدار الحالي (تعديل مباشر وحفظ أوفلاين) ---
+function initVersionControl() {
+    let savedVersion = localStorage.getItem('appVersion') || "1.0";
+    document.getElementById('app-version-display').innerText = savedVersion;
+    document.getElementById('versionInput').value = savedVersion;
+}
+
+function updateVersionNumber() {
+    const newVer = document.getElementById('versionInput').value.trim();
+    if(!newVer) return alert('الرجاء إدخال رقم إصدار صالح');
+    localStorage.setItem('appVersion', newVer);
+    document.getElementById('app-version-display').innerText = newVer;
+    closeModal('versionModal');
+}
+
+// --- محرك شريط النظام الذكي (الوقت، التاريخ، حالة النت، نوع الجوال) ---
+function initSystemStatusBar() {
+    // 1. تحديث مباشر للوقت والتاريخ ثانية بثانية
+    setInterval(() => {
+        const now = new Date();
+        document.getElementById('sys-time').innerText = now.toLocaleTimeString('ar-EG');
+    }, 1000);
+
+    const today = new Date();
+    document.getElementById('sys-date').innerText = today.toLocaleDateString('ar-EG', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+    // 2. فحص حالة الاتصال بالإنترنت (متصل / غير متصل)
+    function updateOnlineStatus() {
+        const netStatus = document.getElementById('net-status');
+        if (navigator.onLine) {
+            netStatus.innerHTML = '<i class="fa-solid fa-circle" style="color:var(--success)"></i> متصل بالإنترنت';
+        } else {
+            netStatus.innerHTML = '<i class="fa-solid fa-circle" style="color:var(--danger)"></i> غير متصل (أوفلاين)';
+        }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
+    // 3. التعرّف الذكي على نوع الجوال المفتوح منه النظام
+    const ua = navigator.userAgent;
+    let deviceName = "كمبيوتر / غير معرف";
+    if (/iPhone/i.test(ua)) deviceName = "iPhone 📱";
+    else if (/iPad/i.test(ua)) deviceName = "iPad 🍏";
+    else if (/Android/i.test(ua)) deviceName = "Android 🤖";
+    document.getElementById('sys-device').innerText = deviceName;
+
+    // 4. قراءة نوع وجودة الاتصال بالشبكة
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn) {
+        document.getElementById('sys-net-type').innerText = `${conn.effectiveType ? conn.effectiveType.toUpperCase() : 'Wi-Fi'}`;
+    } else {
+        document.getElementById('sys-net-type').innerText = "Wi-Fi نشط";
+    }
 }
 
 function saveToStorage() {
@@ -127,14 +186,14 @@ function selectRouter(idx) {
     renderDevices();
 }
 
-/* --- نظام الأجهزة والمشتركين --- */
+/* --- نظام الأجهزة والمشتركين مصلح بالكامل --- */
 function openDeviceModal(editIdx = null) {
     if(editIdx !== null) {
         document.getElementById('deviceModalTitle').innerHTML = "<i class='fa-solid fa-user-pen'></i> تعديل بيانات المشترك";
         document.getElementById('editDeviceIndex').value = editIdx;
         const dev = networkData[currentRouterIndex].devices[editIdx];
         document.getElementById('devOwner').value = dev.owner;
-        document.getElementById('devPhone').value = dev.phone || ""; // تم التأكيد: جلب الهاتف المخزن
+        document.getElementById('devPhone').value = dev.phone || "";
         document.getElementById('devMac').value = dev.mac;
         document.getElementById('devModel').value = dev.model;
         document.getElementById('devJoinDate').value = dev.joinDate;
@@ -144,7 +203,7 @@ function openDeviceModal(editIdx = null) {
         document.getElementById('deviceModalTitle').innerHTML = "<i class='fa-solid fa-user-plus'></i> إضافة مشترك جديد";
         document.getElementById('editDeviceIndex').value = "";
         document.getElementById('devOwner').value = "";
-        document.getElementById('devPhone').value = ""; // تصفير الهاتف للجديد
+        document.getElementById('devPhone').value = "";
         document.getElementById('devMac').value = "";
         document.getElementById('devModel').value = "";
         document.getElementById('devJoinDate').valueAsDate = new Date();
@@ -156,7 +215,7 @@ function openDeviceModal(editIdx = null) {
 
 function saveDevice() {
     const owner = document.getElementById('devOwner').value.trim();
-    const phone = document.getElementById('devPhone').value.trim(); // تم الإصلاح: التقاط حقل الرقم بنجاح
+    const phone = document.getElementById('devPhone').value.trim();
     const mac = document.getElementById('devMac').value.trim().toUpperCase();
     const model = document.getElementById('devModel').value.trim();
     const joinDate = document.getElementById('devJoinDate').value;
@@ -166,7 +225,6 @@ function saveDevice() {
 
     if(!owner || !mac) return alert('يرجى كتابة الاسم والماك آدرس بدقة');
 
-    // تم الإصلاح: الرقم phone يدخل ضمن البنية المحفوظة في الداتا
     const schema = { owner, phone, mac, model, joinDate, duration, payment };
 
     if(editIdx !== "") networkData[currentRouterIndex].devices[editIdx] = schema;
@@ -246,7 +304,6 @@ function renderDevices() {
     }
 }
 
-/* --- محرك إرسال واتساب الفوري والمباشر للشات المخصص --- */
 function sendWhatsAppReminder(ownerName, daysLeft, expiryDate, phoneNumber) {
     let message = "";
     
@@ -261,9 +318,8 @@ function sendWhatsAppReminder(ownerName, daysLeft, expiryDate, phoneNumber) {
     const encodedMessage = encodeURIComponent(message);
     let whatsappUrl = "";
     
-    // تم الإصلاح الجذري: تنظيف الرقم وإرساله مباشرة لفتح شات الشخص المطلوب فوراً بدون اختيار يدوي
     if(phoneNumber && phoneNumber.trim() !== "") {
-        let cleanNumber = phoneNumber.trim().replace(/[+\s\-]/g, ''); // إزالة الفراغات والرموز الزائدة
+        let cleanNumber = phoneNumber.trim().replace(/[+\s\-]/g, '');
         whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${encodedMessage}`;
     } else {
         whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
@@ -272,7 +328,6 @@ function sendWhatsAppReminder(ownerName, daysLeft, expiryDate, phoneNumber) {
     window.open(whatsappUrl, '_blank');
 }
 
-/* --- نظام فحص الإشعارات اليومي --- */
 function checkForExpiredSubscribers() {
     let criticalCount = 0;
     let expiredCount = 0;
@@ -300,7 +355,6 @@ function checkForExpiredSubscribers() {
     }
 }
 
-/* --- محرك النسخ الاحتياطي (Backup) --- */
 function exportData() {
     const blob = new Blob([JSON.stringify(networkData)], {type: "application/json"});
     const url = URL.createObjectURL(blob);
@@ -327,11 +381,29 @@ function importData(e) {
     reader.readAsText(e.target.files[0]);
 }
 
-/* --- متطلبات الـ PWA والتثبيت --- */
+/* --- محرك الـ PWA والتحديث التلقائي الذكي فور توفر الإنترنت --- */
 function setupPWA() {
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker Registered'));
+        navigator.serviceWorker.register('sw.js').then(reg => {
+            // فحص وجود كود جديد على السيرفر الرئيسي للموقع بشكل دوري وعند الفتح بالنت
+            reg.addEventListener('updatefound', () => {
+                newWorker = reg.installing;
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // إظهار بانر التحديث فوراً للمستخدم لإنعاش الكاش
+                        document.getElementById('update-banner').style.display = 'flex';
+                    }
+                });
+            });
+        });
+
+        // تشغيل آلية التحديث الفوري عند النقر
+        let refreshing;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            window.location.reload();
+            refreshing = true;
+        });
     }
 
     const installBtn = document.getElementById('installBtn');
@@ -352,6 +424,14 @@ function setupPWA() {
             });
         }
     });
+}
+
+function applyAppUpdate() {
+    if (newWorker) {
+        newWorker.postMessage({ action: 'skipWaiting' });
+    } else {
+        window.location.reload();
+    }
 }
 
 function setupNotifications() {
