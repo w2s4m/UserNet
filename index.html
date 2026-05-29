@@ -14,6 +14,19 @@
 </head>
 <body class="dark-mode">
 
+    <div class="system-status-bar">
+        <div class="status-item"><i class="fa-solid fa-clock"></i> <span id="sys-time">00:00:00</span></div>
+        <div class="status-item"><i class="fa-solid fa-calendar-day"></i> <span id="sys-date">--/--/----</span></div>
+        <div class="status-item" id="net-status"><i class="fa-solid fa-circle"></i> جاري الفحص...</div>
+        <div class="status-item"><i class="fa-solid fa-mobile-button"></i> جازك: <span id="sys-device">جاري التعرف...</span></div>
+        <div class="status-item"><i class="fa-solid fa-wifi"></i> الاتصال: <span id="sys-net-type">جاري الفحص...</span></div>
+    </div>
+
+    <div id="update-banner" class="update-banner" style="display: none;">
+        <span><i class="fa-solid fa-arrows-rotate fa-spin"></i> يتوفر تحديث جديد للموقع!</span>
+        <button class="btn btn-accent btn-sm" onclick="applyAppUpdate()">تحديث الآن 🚀</button>
+    </div>
+
     <div class="app-container">
         
         <header class="main-header">
@@ -59,7 +72,8 @@
         </section>
 
         <div class="backup-bar">
-            <button class="btn btn-secondary" onclick="exportData()"><i class="fa-solid fa-download"></i> تصدير نسخة احتياطية</button>
+            <button class="btn btn-secondary" onclick="openModal('versionModal')"><i class="fa-solid fa-code-version"></i> تعديل رقم الاصدار</button>
+            <button class="btn btn-secondary" onclick="exportData()"><i class="fa-solid fa-download"></i> تصدير نسخة</button>
             <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> استعادة نسخة</button>
             <input type="file" id="importFile" style="display:none" onchange="importData(event)">
         </div>
@@ -99,6 +113,25 @@
 
             <div class="devices-list" id="devicesList"></div>
         </section>
+
+        <footer class="app-footer">
+            <p>تصميم وتطوير العبقري <span class="owner-highlight">وسام فحجان</span> &copy; 2026</p>
+            <div class="version-tag">الاصدار الحالي: <span id="app-version-display">1.0</span></div>
+        </footer>
+    </div>
+
+    <div id="versionModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fa-solid fa-gear"></i> إدارة إصدار النظام</h3>
+            <div class="form-group" style="margin-top: 14px;">
+                <label>رقم الإصدار الحالي</label>
+                <input type="text" id="versionInput" placeholder="مثال: 1.5">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeModal('versionModal')">إلغاء</button>
+                <button class="btn btn-primary" onclick="updateVersionNumber()">حفظ وتحديث التذييل</button>
+            </div>
+        </div>
     </div>
 
     <div id="routerModal" class="modal">
