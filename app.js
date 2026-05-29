@@ -130,6 +130,7 @@ function openDeviceModal(editIdx = null) {
         document.getElementById('editDeviceIndex').value = editIdx;
         const dev = networkData[currentRouterIndex].devices[editIdx];
         document.getElementById('devOwner').value = dev.owner;
+        document.getElementById('devPhone').value = dev.phone || ""; // تم الإصلاح: جلب رقم الهاتف للتعديل
         document.getElementById('devMac').value = dev.mac;
         document.getElementById('devModel').value = dev.model;
         document.getElementById('devJoinDate').value = dev.joinDate;
@@ -139,6 +140,7 @@ function openDeviceModal(editIdx = null) {
         document.getElementById('deviceModalTitle').innerText = "إضافة مشترك جديد ➕";
         document.getElementById('editDeviceIndex').value = "";
         document.getElementById('devOwner').value = "";
+        document.getElementById('devPhone').value = ""; // تفريغ حقل الهاتف للجديد
         document.getElementById('devMac').value = "";
         document.getElementById('devModel').value = "";
         document.getElementById('devJoinDate').valueAsDate = new Date();
@@ -150,6 +152,7 @@ function openDeviceModal(editIdx = null) {
 
 function saveDevice() {
     const owner = document.getElementById('devOwner').value.trim();
+    const phone = document.getElementById('devPhone').value.trim(); // تم الإصلاح: التقاط رقم الهاتف
     const mac = document.getElementById('devMac').value.trim().toUpperCase();
     const model = document.getElementById('devModel').value.trim();
     const joinDate = document.getElementById('devJoinDate').value;
@@ -159,7 +162,8 @@ function saveDevice() {
 
     if(!owner || !mac) return alert('يرجى كتابة الاسم والماك آدرس بدقة');
 
-    const schema = { owner, mac, model, joinDate, duration, payment };
+    // تم الإصلاح: إضافة متغير phone هنا للحفظ في كائن البيانات
+    const schema = { owner, phone, mac, model, joinDate, duration, payment };
 
     if(editIdx !== "") networkData[currentRouterIndex].devices[editIdx] = schema;
     else networkData[currentRouterIndex].devices.push(schema);
@@ -177,7 +181,6 @@ function deleteDevice(idx) {
     }
 }
 
-// 1. تحديث دالة renderDevices لتعرض زر الواتساب وفلتر التنبيهات
 function renderDevices() {
     const list = document.getElementById('devicesList');
     list.innerHTML = '';
@@ -203,14 +206,13 @@ function renderDevices() {
         // تحديد شارة حالة الاشتراك الديناميكية
         let expiryBadge = '';
         if(!billing.isActive) {
-            expiryBadge = `<span class="badge badge-danger">منتهي منذ ${Math.abs(billing.daysLeft)} يوم</span>`;
+            expiryBadge = `<span class="badge badge-expired">منتهي منذ ${Math.abs(billing.daysLeft)} يوم</span>`;
         } else if(billing.daysLeft <= 3) {
             expiryBadge = `<span class="badge badge-warning-critical">ينتهي قريباً (باقي ${billing.daysLeft} يوم) ⚠️</span>`;
         } else {
             expiryBadge = `<span class="badge badge-active">نشط (باقي ${billing.daysLeft} يوم)</span>`;
         }
 
-        // إنشاء كرت الجهاز وضخ كود الـ HTML المتناسق الجديد
         const card = document.createElement('div');
         card.className = 'device-card';
         card.innerHTML = `
@@ -229,7 +231,7 @@ function renderDevices() {
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
-                <button class="btn btn-secondary" onclick="sendWhatsAppReminder('${dev.owner}', ${billing.daysLeft}, '${billing.expiryDate}')">تذكير 💬</button>
+                <button class="btn btn-secondary" onclick="sendWhatsAppReminder('${dev.owner}', ${billing.daysLeft}, '${billing.expiryDate}', '${dev.phone || ""}')">تذكير 💬</button>
                 <button class="btn btn-secondary" onclick="openDeviceModal(${idx})">تعديل 📝</button>
                 <button class="btn btn-danger" onclick="deleteDevice(${idx})">حذف 🗑️</button>
             </div>
@@ -242,27 +244,32 @@ function renderDevices() {
     }
 }
 
-// 2. دالة توليد رسائل الواتساب وإرسالها تلقائياً
-function sendWhatsAppReminder(ownerName, daysLeft, expiryDate) {
+// تم الإصلاح: استقبال وإدراج رقم الهاتف في الرابط مباشرة لإرسال فوري
+function sendWhatsAppReminder(ownerName, daysLeft, expiryDate, phoneNumber) {
     let message = "";
     
     if (daysLeft < 0) {
         message = `مرحباً أخي ${ownerName}، نود تذكيرك بأن اشتراك الإنترنت الخاص بك قد انتهى وصلاحية الحساب متوقفة حالياً. يرجى التواصل معنا لتجديد الاشتراك وسداد الرسوم. شكراً لك!`;
     } else if (daysLeft == 0) {
-        message = `مرحباً أخي ${ownerName}، نود تذكيرك بأن اشتراك الإنترنت الخاص بك ينتهي اليوم الماوفق ${expiryDate}. يرجى التجديد لضمان استمرار الخدمة دون انقطاع. شكراً لك!`;
+        message = `مرحباً أخي ${ownerName}، نود تذكيرك بأن اشتراك الإنترنت الخاص بك ينتهي اليوم الموافق ${expiryDate}. يرجى التجديد لضمان استمرار الخدمة دون انقطاع. شكراً لك!`;
     } else {
         message = `مرحباً أخي ${ownerName}، نود تذكيرك بأن اشتراك الإنترنت الخاص بك أوشك على الانتهاء (متبقي ${daysLeft} أيام فقط وينتهي بتاريخ ${expiryDate}). يرجى الترتيب للتجديد قريباً. شكراً لك!`;
     }
     
-    // ترميز النص ليتوافق مع الروابط الذكية للواتساب
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
     
-    // فتح الواتساب ليقوم المستخدم باختيار الشخص وإرسال الرسالة الجاهزة له مباشرة
+    // إذا كان الرقم موجوداً، سيفتح الشات المباشر مع هذا الشخص، وإذا لم يكن موجوداً سيفتح الرابط العام لاختياره يدوياً
+    let whatsappUrl = "";
+    if(phoneNumber && phoneNumber.trim() !== "") {
+        whatsappUrl = `https://wa.me/${phoneNumber.trim()}?text=${encodedMessage}`;
+    } else {
+        whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+    }
+    
     window.open(whatsappUrl, '_blank');
 }
 
-// 3. تحديث نظام فحص الإشعارات اليومي ليعطي تقريراً منبثقاً ذكياً
+// نظام فحص الإشعارات اليومي
 function checkForExpiredSubscribers() {
     let criticalCount = 0;
     let expiredCount = 0;
@@ -278,7 +285,6 @@ function checkForExpiredSubscribers() {
         });
     });
 
-    // إرسال إشعار للنظام إذا وُجدت أجهزة حرجة
     if ((criticalCount > 0 || expiredCount > 0) && Notification.permission === 'granted') {
         navigator.serviceWorker.ready.then(registration => {
             registration.showNotification('مركز التحكم: تنبيه الاشتراكات ⚠️', {
@@ -352,28 +358,6 @@ function setupNotifications() {
             if (permission === 'granted') {
                 checkForExpiredSubscribers();
             }
-        });
-    }
-}
-
-function checkForExpiredSubscribers() {
-    let expiredCount = 0;
-    networkData.forEach(r => {
-        r.devices.forEach(d => {
-            const b = evaluateBilling(d.joinDate, d.duration);
-            if (!b.isActive && Math.abs(b.daysLeft) <= 1) { // منتهي حديثاً اليوم
-                expiredCount++;
-            }
-        });
-    });
-
-    if (expiredCount > 0) {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification('تنبيه الفوترة الذكي', {
-                body: `يوجد لديك ${expiredCount} اشتراكات انتهت صلاحيتها اليوم، يرجى مراجعة اللوحة.`,
-                icon: 'icon.png',
-                vibrate: [200, 100, 200]
-            });
         });
     }
 }
