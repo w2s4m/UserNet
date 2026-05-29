@@ -1,31 +1,30 @@
-/* الألوان والسمات المتطورة لغرف التحكم العسكرية والتقنية */
 :root {
-    --bg-main: #0f172a;
-    --bg-surface: rgba(30, 41, 59, 0.7);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
+    --bg-main: #0b0f19;
+    --bg-surface: rgba(22, 30, 49, 0.75);
+    --border-color: rgba(255, 255, 255, 0.07);
+    --text-primary: #f1f5f9;
+    --text-secondary: #64748b;
     --accent: #38bdf8;
-    --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #0369a1 100%);
+    --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
-    --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    --blur: blur(12px);
+    --shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+    --blur: blur(16px);
 }
 
 .light-mode {
-    --bg-main: #f1f5f9;
+    --bg-main: #f8fafc;
     --bg-surface: rgba(255, 255, 255, 0.85);
-    --border-color: rgba(0, 0, 0, 0.08);
+    --border-color: rgba(0, 0, 0, 0.06);
     --text-primary: #0f172a;
-    --text-secondary: #64748b;
+    --text-secondary: #94a3b8;
     --accent: #0284c7;
     --accent-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
     --success: #16a34a;
     --warning: #d97706;
     --danger: #dc2626;
-    --shadow: 0 8px 32px 0 rgba(148, 163, 184, 0.2);
+    --shadow: 0 12px 30px 0 rgba(148, 163, 184, 0.15);
 }
 
 * {
@@ -33,7 +32,7 @@
     margin: 0;
     padding: 0;
     font-family: system-ui, -apple-system, sans-serif;
-    transition: background 0.3s ease, border-color 0.3s ease;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
 }
 
 body {
@@ -41,6 +40,7 @@ body {
     color: var(--text-primary);
     min-height: 100vh;
     padding: 16px;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .app-container {
@@ -48,14 +48,13 @@ body {
     margin: 0 auto;
 }
 
-/* Glassmorphism الهيدر */
 .main-header {
     background: var(--bg-surface);
     backdrop-filter: var(--blur);
     -webkit-backdrop-filter: var(--blur);
     border: 1px solid var(--border-color);
-    padding: 24px;
-    border-radius: 16px;
+    padding: 20px;
+    border-radius: 20px;
     box-shadow: var(--shadow);
     display: flex;
     justify-content: space-between;
@@ -63,13 +62,9 @@ body {
     margin-bottom: 24px;
 }
 
-.main-header p {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin-top: 4px;
-}
+.main-header h1 { font-size: 1.6rem; font-weight: 800; }
+.main-header p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px; }
 
-/* لوحة التحكم والعدادات الذكية */
 .dashboard-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -81,8 +76,8 @@ body {
     background: var(--bg-surface);
     backdrop-filter: var(--blur);
     border: 1px solid var(--border-color);
-    padding: 16px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -90,33 +85,25 @@ body {
 }
 
 .stat-icon {
-    font-size: 2rem;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.stat-info h3 {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-}
-
-.stat-info p {
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-
-.backup-bar {
+    font-size: 1.8rem;
+    color: var(--accent);
+    background: rgba(56, 189, 248, 0.1);
+    width: 50px;
+    height: 50px;
     display: flex;
-    gap: 8px;
-    margin-bottom: 24px;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
 }
 
-/* مكونات الأزرار والتحكم */
+.stat-info h3 { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 4px; }
+.stat-info p { font-size: 1.6rem; font-weight: 700; }
+
+.backup-bar { display: flex; gap: 8px; margin-bottom: 24px; justify-content: flex-end; }
+
 .btn {
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
     border: none;
@@ -125,203 +112,126 @@ body {
     gap: 8px;
     font-size: 0.9rem;
 }
+.btn:active { transform: scale(0.97); }
 
-.btn-primary { background: var(--accent-gradient); color: #fff; }
-.btn-secondary { background: rgba(255,255,255,0.05); color: var(--text-primary); border: 1px solid var(--border-color); }
+.btn-primary { background: var(--accent-gradient); color: #fff; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25); }
+.btn-secondary { background: rgba(255,255,255,0.04); color: var(--text-primary); border: 1px solid var(--border-color); }
+.btn-secondary:hover { background: rgba(255,255,255,0.08); }
 .btn-danger { background: var(--danger); color: #fff; }
 
 .icon-btn {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    font-size: 1.2rem;
-    padding: 10px;
+    font-size: 1.1rem;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
     cursor: pointer;
     color: var(--text-primary);
 }
 
-/* الشبكات والبطاقات */
-.section-block {
-    margin-bottom: 32px;
-}
+.section-block { margin-bottom: 32px; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.section-header h2 { font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
 
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.routers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-}
+.routers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 
 .router-card {
     background: var(--bg-surface);
     backdrop-filter: var(--blur);
     border: 1px solid var(--border-color);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 24px;
     position: relative;
     cursor: pointer;
     box-shadow: var(--shadow);
 }
-
 .router-card.active {
     border-color: var(--accent);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
 }
 
 .delete-action-btn {
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: 14px;
+    left: 14px;
     background: transparent;
     border: none;
-    color: var(--danger);
+    color: var(--text-secondary);
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
+.delete-action-btn:hover { color: var(--danger); }
 
-/* نظام الفلترة والأجهزة */
-.filter-wrapper {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-}
+/* أدوات الفلترة والبحث الفخمة */
+.filter-wrapper { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+
+.search-box { position: relative; flex: 2; min-width: 260px; }
+.search-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+.search-input { width: 100%; padding: 12px 40px 12px 14px; }
 
 .search-input, .filter-select {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     padding: 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
 }
-
-.search-input { flex: 2; min-width: 260px; }
-.filter-select { flex: 1; min-width: 150px; }
+.filter-select { flex: 1; min-width: 150px; cursor: pointer; }
 
 .devices-list { display: flex; flex-direction: column; gap: 12px; }
-
 .device-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
+    box-shadow: var(--shadow);
 }
 
-/* شريط تقدم الاشتراك المتقدم */
-.billing-progress-container {
+.billing-progress-container { width: 100%; background: rgba(255,255,255,0.05); height: 6px; border-radius: 10px; margin-top: 10px; overflow: hidden; }
+.billing-progress-bar { height: 100%; border-radius: 10px; width: 0%; }
+
+.badge { padding: 5px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+.badge-active { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+.badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+.badge-warning-critical { background: rgba(245, 158, 11, 0.1); color: var(--warning); animation: pulseGlow 2s infinite; }
+
+@keyframes pulseGlow {
+    0% { opacity: 0.8; }
+    50% { opacity: 1; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+    100% { opacity: 0.8; }
+}
+
+/* حل مشكلة تضخيم شاشة الكتابة الذكي في الجوالات والآيفون */
+.form-group input, .form-group select {
+    font-size: 16px !important; /* يمنع الـ Auto-zoom الإجباري */
     width: 100%;
-    background: rgba(255,255,255,0.05);
-    height: 6px;
-    border-radius: 3px;
-    margin-top: 8px;
-    overflow: hidden;
-}
-
-.billing-progress-bar {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 3px;
-    width: 0%;
-}
-
-.badge {
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: bold;
-}
-.badge-active { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-.badge-expired { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
-
-/* نفاذة Modals */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
-    z-index: 2000;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background: var(--bg-main);
+    padding: 12px;
+    background: rgba(0,0,0,0.2);
     border: 1px solid var(--border-color);
-    padding: 24px;
-    border-radius: 16px;
-    width: 100%;
-    max-width: 480px;
+    border-radius: 10px;
+    color: var(--text-primary);
 }
 
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; padding: 16px; }
+.modal-content { background: #0f172a; border: 1px solid var(--border-color); padding: 24px; border-radius: 20px; width: 100%; max-width: 480px; box-shadow: var(--shadow); }
 .form-group { margin-bottom: 16px; }
 .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary); }
-.form-group input, .form-group select {
-    width: 100%; padding: 10px; background: rgba(0,0,0,0.1); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary);
-}
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
 
-/* الهواتف والشاشات الصغيرة */
 @media (max-width: 768px) {
     .main-header { flex-direction: column; text-align: center; gap: 16px; }
     .flex-column-mobile { flex-direction: column; align-items: flex-start; gap: 12px; }
-    .device-card { flex-direction: column; align-items: flex-start; }
-}
-
-/* شارة التنبيه للأجهزة الحرجة */
-.badge-warning-critical {
-    background: rgba(245, 158, 11, 0.15);
-    color: var(--warning);
-    animation: pulseGlow 2s infinite;
-}
-
-@keyframes pulseGlow {
-    0% { opacity: 0.7; }
-    50% { opacity: 1; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
-    100% { opacity: 0.7; }
-}
-
-/* زر تذكير الواتساب الذكي */
-.btn-whatsapp {
-    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: bold;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
-}
-
-.btn-whatsapp:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.3);
-}
-
-/* شارة التنبيه للأجهزة الحرجة */
-.badge-warning-critical {
-    background: rgba(245, 158, 11, 0.15);
-    color: var(--warning);
-    animation: pulseGlow 2s infinite;
-}
-
-@keyframes pulseGlow {
-    0% { opacity: 0.7; }
-    50% { opacity: 1; box-shadow: 0 0 8px rgba(245, 158, 11, 0.4); }
-    100% { opacity: 0.7; }
+    .device-card { flex-direction: column; align-items: stretch; }
+    .device-card div:last-child { display: flex; justify-content: space-between; gap: 8px; }
+    .device-card .btn { flex: 1; justify-content: center; }
 }

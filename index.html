@@ -2,9 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>مركز إدارة الشبكة الذكي</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0f172a">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,39 +18,39 @@
         
         <header class="main-header">
             <div class="welcome-area">
-                <h1>لوحة التحكم الذكية 👋</h1>
+                <h1>لوحة التحكم الذكية <i class="fa-solid fa-square-rss" style="color: var(--accent);"></i></h1>
                 <p>إدارة المشتركين والراوترات ونظام الفوترة التلقائي</p>
             </div>
             <div class="header-controls">
-                <button id="themeToggle" class="icon-btn" title="تغيير المظهر">🌓</button>
-                <button id="installBtn" class="btn btn-accent style-pwa-btn" style="display:none;">📲 تثبيت التطبيق</button>
+                <button id="themeToggle" class="icon-btn" title="تغيير المظهر"><i class="fa-solid fa-moon"></i></button>
+                <button id="installBtn" class="btn btn-accent style-pwa-btn" style="display:none;"><i class="fa-solid fa-mobile-screen-button"></i> تثبيت التطبيق</button>
             </div>
         </header>
 
         <section class="dashboard-stats">
             <div class="stat-card">
-                <div class="stat-icon">📶</div>
+                <div class="stat-icon"><i class="fa-solid fa-router"></i></div>
                 <div class="stat-info">
                     <h3>الراوترات</h3>
                     <p id="stat-routers">0</p>
                 </div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">📱</div>
+                <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
                 <div class="stat-info">
                     <h3>إجمالي المشتركين</h3>
                     <p id="stat-devices">0</p>
                 </div>
             </div>
             <div class="stat-card status-active">
-                <div class="stat-icon">✅</div>
+                <div class="stat-icon" style="color: var(--success);"><i class="fa-solid fa-circle-check"></i></div>
                 <div class="stat-info">
                     <h3>الاشتراكات النشطة</h3>
                     <p id="stat-active">0</p>
                 </div>
             </div>
             <div class="stat-card status-expired">
-                <div class="stat-icon">⚠️</div>
+                <div class="stat-icon" style="color: var(--danger);"><i class="fa-solid fa-circle-exclamation"></i></div>
                 <div class="stat-info">
                     <h3>الاشتراكات المنتهية</h3>
                     <p id="stat-expired">0</p>
@@ -58,37 +59,41 @@
         </section>
 
         <div class="backup-bar">
-            <button class="btn btn-secondary" onclick="exportData()">💾 تصدير نسخة احتياطية</button>
-            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">📂 استعادة نسخة</button>
+            <button class="btn btn-secondary" onclick="exportData()"><i class="fa-solid fa-download"></i> تصدير نسخة احتياطية</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> استعادة نسخة</button>
             <input type="file" id="importFile" style="display:none" onchange="importData(event)">
         </div>
 
         <section class="section-block">
             <div class="section-header">
-                <h2>🎛️ أجهزة التوجيه (الراوترات)</h2>
-                <button class="btn btn-primary" onclick="openModal('routerModal')">➕ إضافة راوتر</button>
+                <h2><i class="fa-solid fa-network-wired"></i> أجهزة التوجيه (الراوترات)</h2>
+                <button class="btn btn-primary" onclick="openModal('routerModal')"><i class="fa-solid fa-plus"></i> إضافة راوتر</button>
             </div>
             <div class="routers-grid" id="routersGrid"></div>
         </section>
 
         <section class="section-block" id="devicesSection" style="display: none;">
             <div class="section-header flex-column-mobile">
-                <h2 id="selectedRouterTitle">📱 الأجهزة التابعة للراوتر</h2>
-                <button class="btn btn-primary" onclick="openDeviceModal()">➕ إضافة مشترك جديد</button>
+                <h2 id="selectedRouterTitle"><i class="fa-solid fa-laptop-network"></i> الأجهزة التابعة للراوتر</h2>
+                <button class="btn btn-primary" onclick="openDeviceModal()"><i class="fa-solid fa-user-plus"></i> إضافة مشترك جديد</button>
             </div>
 
             <div class="filter-wrapper">
-                <input type="text" id="searchDevice" class="search-input" placeholder="ابحث بالاسم، الماك آدرس، أو نوع الجوال..." oninput="renderDevices()">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchDevice" class="search-input" placeholder="ابحث بالاسم، الماك، الجوال..." oninput="renderDevices()">
+                </div>
                 <select id="filterPayment" class="filter-select" onchange="renderDevices()">
                     <option value="all">كل حالات الدفع</option>
                     <option value="واصل">واصل</option>
                     <option value="تجريبي">تجريبي</option>
                     <option value="لم يدفع">لم يدفع</option>
                 </select>
-                    <select id="filterStatus" class="filter-select" onchange="renderDevices()">
+                <select id="filterStatus" class="filter-select" onchange="renderDevices()">
                     <option value="all">كل حالات الاشتراك</option>
                     <option value="active">نشط</option>
-                    <option value="warning">قريب من الانتهاء (≤ 3 أيام)</option> <option value="expired">منتهي</option>
+                    <option value="warning">قريب من الانتهاء (≤ 3 أيام)</option>
+                    <option value="expired">منتهي</option>
                 </select>
             </div>
 
@@ -98,10 +103,10 @@
 
     <div id="routerModal" class="modal">
         <div class="modal-content">
-            <h3>إضافة راوتر جديد</h3>
+            <h3><i class="fa-solid fa-router"></i> إضافة راوتر جديد</h3>
             <div class="form-group">
                 <label>اسم الراوتر المعرّف</label>
-                <input type="text" id="routerName" placeholder="مثال: راوتر الطابق الثاني (الرئيسي)">
+                <input type="text" id="routerName" placeholder="مثال: راوتر الطابق الثاني">
             </div>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeModal('routerModal')">إلغاء</button>
@@ -112,17 +117,16 @@
 
     <div id="deviceModal" class="modal">
         <div class="modal-content">
-            <h3 id="deviceModalTitle">إضافة مشترك جديد</h3>
+            <h3 id="deviceModalTitle"><i class="fa-solid fa-user-gear"></i> إضافة مشترك جديد</h3>
             <input type="hidden" id="editDeviceIndex">
             
             <div class="form-group">
                 <label>اسم المشترك الثلاثي</label>
                 <input type="text" id="devOwner" placeholder="أدخل اسم العميل">
             </div>
-            <!-- الحقل الجديد: رقم الواتساب -->
             <div class="form-group">
-                <label>رقم الواتساب (مع الرمز الدولي بدون أصفار، مثال: 970599xxxxxx)</label>
-                <input type="tel" id="devPhone" placeholder="97059xxxxxxx">
+                <label>رقم الواتساب (مع مقدمة الدولة بدون +)</label>
+                <input type="text" id="devPhone" placeholder="مثال: 970599747574">
             </div>
             <div class="form-group">
                 <label>عنوان الـ MAC</label>

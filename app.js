@@ -12,11 +12,16 @@ function initApp() {
     renderRouters();
     updateStats();
     
-    // مشغل وضع الثيم المتقدم
     const themeBtn = document.getElementById('themeToggle');
     themeBtn.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
         document.body.classList.toggle('dark-mode');
+        const icon = themeBtn.querySelector('i');
+        if(document.body.classList.contains('light-mode')) {
+            icon.className = 'fa-solid fa-sun';
+        } else {
+            icon.className = 'fa-solid fa-moon';
+        }
     });
 }
 
@@ -25,7 +30,6 @@ function saveToStorage() {
     updateStats();
 }
 
-// محرك الحسابات الذكي للفوترة التلقائية
 function evaluateBilling(joinDateStr, durationDays) {
     const start = new Date(joinDateStr);
     const duration = parseInt(durationDays) || 0;
@@ -40,7 +44,7 @@ function evaluateBilling(joinDateStr, durationDays) {
     const currentPassed = today - start;
     
     let progress = 100 - Math.round((currentPassed / totalPeriod) * 100);
-    progress = Math.max(0, Math.min(100, progress)); // الحصر بين 0-100
+    progress = Math.max(0, Math.min(100, progress));
 
     const diffTime = expiry - today;
     const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -81,9 +85,9 @@ function renderRouters() {
         card.className = `router-card ${currentRouterIndex === idx ? 'active' : ''}`;
         card.onclick = () => selectRouter(idx);
         card.innerHTML = `
-            <button class="delete-action-btn" onclick="deleteRouter(event, ${idx})">🗑️</button>
-            <h3>📶 ${router.name}</h3>
-            <p style="margin-top:8px; font-size:0.85rem; color:var(--text-secondary)">الأجهزة المتصلة: ${router.devices.length}</p>
+            <button class="delete-action-btn" onclick="deleteRouter(event, ${idx})"><i class="fa-solid fa-trash-can"></i></button>
+            <h3><i class="fa-solid fa-router" style="color:var(--accent); margin-left:8px;"></i> ${router.name}</h3>
+            <p style="margin-top:12px; font-size:0.85rem; color:var(--text-secondary)">الأجهزة المتصلة: ${router.devices.length}</p>
         `;
         grid.appendChild(card);
     });
@@ -119,28 +123,28 @@ function selectRouter(idx) {
     currentRouterIndex = idx;
     renderRouters();
     document.getElementById('devicesSection').style.display = 'block';
-    document.getElementById('selectedRouterTitle').innerText = `📱 أجهزة راوتر: ${networkData[idx].name}`;
+    document.getElementById('selectedRouterTitle').innerHTML = `<i class="fa-solid fa-laptop-network"></i> أجهزة راوتر: ${networkData[idx].name}`;
     renderDevices();
 }
 
-/* --- نظام الأجهزة والمشتركين والفلترة المتقدمة --- */
+/* --- نظام الأجهزة والمشتركين --- */
 function openDeviceModal(editIdx = null) {
     if(editIdx !== null) {
-        document.getElementById('deviceModalTitle').innerText = "تعديل بيانات المشترك 📝";
+        document.getElementById('deviceModalTitle').innerHTML = "<i class='fa-solid fa-user-pen'></i> تعديل بيانات المشترك";
         document.getElementById('editDeviceIndex').value = editIdx;
         const dev = networkData[currentRouterIndex].devices[editIdx];
         document.getElementById('devOwner').value = dev.owner;
-        document.getElementById('devPhone').value = dev.phone || ""; // تم الإصلاح: جلب رقم الهاتف للتعديل
+        document.getElementById('devPhone').value = dev.phone || ""; // تم التأكيد: جلب الهاتف المخزن
         document.getElementById('devMac').value = dev.mac;
         document.getElementById('devModel').value = dev.model;
         document.getElementById('devJoinDate').value = dev.joinDate;
         document.getElementById('devDuration').value = dev.duration;
         document.getElementById('devPayment').value = dev.payment;
     } else {
-        document.getElementById('deviceModalTitle').innerText = "إضافة مشترك جديد ➕";
+        document.getElementById('deviceModalTitle').innerHTML = "<i class='fa-solid fa-user-plus'></i> إضافة مشترك جديد";
         document.getElementById('editDeviceIndex').value = "";
         document.getElementById('devOwner').value = "";
-        document.getElementById('devPhone').value = ""; // تفريغ حقل الهاتف للجديد
+        document.getElementById('devPhone').value = ""; // تصفير الهاتف للجديد
         document.getElementById('devMac').value = "";
         document.getElementById('devModel').value = "";
         document.getElementById('devJoinDate').valueAsDate = new Date();
@@ -152,7 +156,7 @@ function openDeviceModal(editIdx = null) {
 
 function saveDevice() {
     const owner = document.getElementById('devOwner').value.trim();
-    const phone = document.getElementById('devPhone').value.trim(); // تم الإصلاح: التقاط رقم الهاتف
+    const phone = document.getElementById('devPhone').value.trim(); // تم الإصلاح: التقاط حقل الرقم بنجاح
     const mac = document.getElementById('devMac').value.trim().toUpperCase();
     const model = document.getElementById('devModel').value.trim();
     const joinDate = document.getElementById('devJoinDate').value;
@@ -162,7 +166,7 @@ function saveDevice() {
 
     if(!owner || !mac) return alert('يرجى كتابة الاسم والماك آدرس بدقة');
 
-    // تم الإصلاح: إضافة متغير phone هنا للحفظ في كائن البيانات
+    // تم الإصلاح: الرقم phone يدخل ضمن البنية المحفوظة في الداتا
     const schema = { owner, phone, mac, model, joinDate, duration, payment };
 
     if(editIdx !== "") networkData[currentRouterIndex].devices[editIdx] = schema;
@@ -193,7 +197,6 @@ function renderDevices() {
     networkData[currentRouterIndex].devices.forEach((dev, idx) => {
         const billing = evaluateBilling(dev.joinDate, dev.duration);
 
-        // محرك الفلترة والبحث المتقدم
         if(query && !dev.owner.toLowerCase().includes(query) && !dev.mac.toLowerCase().includes(query) && !dev.model.toLowerCase().includes(query)) return;
         if(payFilter !== 'all' && dev.payment !== payFilter) return;
         
@@ -203,14 +206,13 @@ function renderDevices() {
             if(statusFilter === 'warning' && (!billing.isActive || billing.daysLeft > 3)) return; 
         }
 
-        // تحديد شارة حالة الاشتراك الديناميكية
         let expiryBadge = '';
         if(!billing.isActive) {
-            expiryBadge = `<span class="badge badge-expired">منتهي منذ ${Math.abs(billing.daysLeft)} يوم</span>`;
+            expiryBadge = `<span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> منتهي منذ ${Math.abs(billing.daysLeft)} يوم</span>`;
         } else if(billing.daysLeft <= 3) {
-            expiryBadge = `<span class="badge badge-warning-critical">ينتهي قريباً (باقي ${billing.daysLeft} يوم) ⚠️</span>`;
+            expiryBadge = `<span class="badge badge-warning-critical"><i class="fa-solid fa-triangle-exclamation"></i> متبقي ${billing.daysLeft} يوم فقط!</span>`;
         } else {
-            expiryBadge = `<span class="badge badge-active">نشط (باقي ${billing.daysLeft} يوم)</span>`;
+            expiryBadge = `<span class="badge badge-active"><i class="fa-solid fa-circle-check"></i> نشط (باقي ${billing.daysLeft} يوم)</span>`;
         }
 
         const card = document.createElement('div');
@@ -218,22 +220,22 @@ function renderDevices() {
         card.innerHTML = `
             <div style="flex: 1;">
                 <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-                    <h3 style="font-size:1.1rem;">👤 ${dev.owner}</h3>
+                    <h3 style="font-size:1.1rem;"><i class="fa-solid fa-user" style="color:var(--text-secondary); margin-left:6px;"></i> ${dev.owner}</h3>
                     ${expiryBadge}
-                    <span class="badge" style="background:rgba(255,255,255,0.05);">${dev.payment}</span>
+                    <span class="badge" style="background:rgba(255,255,255,0.04); color:var(--text-primary); border:1px solid var(--border-color);">${dev.payment}</span>
                 </div>
-                <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:6px;">
-                    HW: ${dev.model || 'غير معرّف'} | MAC: <code style="color:var(--accent)">${dev.mac}</code>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-top:8px;">
+                    <i class="fa-solid fa-mobile-screen"></i> الجوال: ${dev.model || 'غير معرّف'} | <i class="fa-solid fa-fingerprint"></i> MAC: <code style="color:var(--accent)">${dev.mac}</code>
                 </p>
-                <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:4px;">تاريخ الانتهاء: ${billing.expiryDate}</p>
+                <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:4px;"><i class="fa-solid fa-calendar-days"></i> نهاية الاشتراك: ${billing.expiryDate}</p>
                 <div class="billing-progress-container">
                     <div class="billing-progress-bar" style="width: ${billing.progress}%; background: ${billing.isActive ? (billing.daysLeft <= 3 ? 'var(--warning)' : 'var(--success)') : 'var(--danger)'}"></div>
                 </div>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
-                <button class="btn btn-secondary" onclick="sendWhatsAppReminder('${dev.owner}', ${billing.daysLeft}, '${billing.expiryDate}', '${dev.phone || ""}')">تذكير 💬</button>
-                <button class="btn btn-secondary" onclick="openDeviceModal(${idx})">تعديل 📝</button>
-                <button class="btn btn-danger" onclick="deleteDevice(${idx})">حذف 🗑️</button>
+                <button class="btn btn-secondary" style="color:#25D366; border-color:rgba(37,211,102,0.2);" onclick="sendWhatsAppReminder('${dev.owner}', ${billing.daysLeft}, '${billing.expiryDate}', '${dev.phone || ""}')"><i class="fa-brands fa-whatsapp"></i> تذكير</button>
+                <button class="btn btn-secondary" onclick="openDeviceModal(${idx})"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                <button class="btn btn-danger" onclick="deleteDevice(${idx})"><i class="fa-solid fa-trash"></i> حذف</button>
             </div>
         `;
         list.appendChild(card);
@@ -244,7 +246,7 @@ function renderDevices() {
     }
 }
 
-// تم الإصلاح: استقبال وإدراج رقم الهاتف في الرابط مباشرة لإرسال فوري
+/* --- محرك إرسال واتساب الفوري والمباشر للشات المخصص --- */
 function sendWhatsAppReminder(ownerName, daysLeft, expiryDate, phoneNumber) {
     let message = "";
     
@@ -257,19 +259,20 @@ function sendWhatsAppReminder(ownerName, daysLeft, expiryDate, phoneNumber) {
     }
     
     const encodedMessage = encodeURIComponent(message);
-    
-    // إذا كان الرقم موجوداً، سيفتح الشات المباشر مع هذا الشخص، وإذا لم يكن موجوداً سيفتح الرابط العام لاختياره يدوياً
     let whatsappUrl = "";
+    
+    // تم الإصلاح الجذري: تنظيف الرقم وإرساله مباشرة لفتح شات الشخص المطلوب فوراً بدون اختيار يدوي
     if(phoneNumber && phoneNumber.trim() !== "") {
-        whatsappUrl = `https://wa.me/${phoneNumber.trim()}?text=${encodedMessage}`;
+        let cleanNumber = phoneNumber.trim().replace(/[+\s\-]/g, ''); // إزالة الفراغات والرموز الزائدة
+        whatsappUrl = `https://api.whatsapp.com/send?phone=${cleanNumber}&text=${encodedMessage}`;
     } else {
-        whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+        whatsappUrl = `https://api.whatsapp.com/send?text=${encodedMessage}`;
     }
     
     window.open(whatsappUrl, '_blank');
 }
 
-// نظام فحص الإشعارات اليومي
+/* --- نظام فحص الإشعارات اليومي --- */
 function checkForExpiredSubscribers() {
     let criticalCount = 0;
     let expiredCount = 0;
@@ -288,7 +291,7 @@ function checkForExpiredSubscribers() {
     if ((criticalCount > 0 || expiredCount > 0) && Notification.permission === 'granted') {
         navigator.serviceWorker.ready.then(registration => {
             registration.showNotification('مركز التحكم: تنبيه الاشتراكات ⚠️', {
-                body: `لديك (${criticalCount}) مشتركين أوشكت باقاتهم على الانتهاء، و (${expiredCount}) اشتراكات منتهية بالفعل تحتاج مراجعة.`,
+                body: `لديك (${criticalCount}) مشتركين باقاتهم تنتهي قريباً، و (${expiredCount}) اشتراكات منتهية تحتاج مراجعة.`,
                 icon: 'https://cdn-icons-png.flaticon.com/512/3050/3050449.png',
                 vibrate: [300, 100, 300],
                 badge: 'https://cdn-icons-png.flaticon.com/512/3050/3050449.png'
@@ -351,7 +354,6 @@ function setupPWA() {
     });
 }
 
-/* --- محرك الإشعارات (Push-like Notifications) --- */
 function setupNotifications() {
     if ('Notification' in window) {
         Notification.requestPermission().then(permission => {
